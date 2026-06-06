@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pick Your 15</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#071a0c;color:#e8f5ec;font-family:system-ui,sans-serif;font-size:14px}
+.hdr{display:flex;justify-content:space-between;align-items:flex-start;padding:10px 12px 0}
+.ttl{font-size:22px;font-weight:900;color:#f2c94c}
+.sub{font-size:10px;color:#7aab88;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-top:1px}
+.sk{background:rgba(242,201,76,.12);border:1px solid rgba(242,201,76,.28);border-radius:9px;padding:4px 12px;text-align:center}
+.sk-n{font-size:20px;font-weight:900;color:#f2c94c;line-height:1}
+.sk-l{font-size:9px;color:#7aab88;font-weight:800;text-transform:uppercase}
+
+/* MODE TOGGLE */
+.mode-bar{display:flex;gap:0;margin:10px 12px 0;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;overflow:hidden}
+.mode-btn{flex:1;border:none;background:transparent;color:#7aab88;font-weight:800;font-size:12px;padding:9px 8px;cursor:pointer;font-family:inherit;transition:all .15s;text-transform:uppercase;letter-spacing:.06em}
+.mode-btn.active{background:#f2c94c;color:#071a0c}
+.mode-btn.leg.active{background:linear-gradient(135deg,#7c3aed,#4f1da0);color:#fff}
+.mode-desc{margin:6px 12px 0;font-size:11px;font-weight:700;padding:6px 10px;border-radius:8px;line-height:1.4}
+.mode-desc.classic{background:rgba(242,201,76,.07);border:1px solid rgba(242,201,76,.18);color:#ffe8a3}
+.mode-desc.legendary{background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.28);color:#d4b3ff}
+
+.lay{display:flex;gap:10px;padding:10px 12px 70px;flex-wrap:wrap}
+.lft{flex:0 0 320px;display:flex;flex-direction:column;gap:8px}
+.rgt{flex:1;min-width:240px}
+.card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:14px;overflow:hidden}
+.dh{background:rgba(22,107,58,.18);border-bottom:1px solid rgba(255,255,255,.08);padding:12px}
+.lbl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#7aab88;margin-bottom:4px}
+.cn{font-size:38px;font-weight:900;line-height:1;color:#fff;min-height:38px}
+.cy{font-size:13px;font-weight:800;color:#f2c94c;margin-top:2px;min-height:16px}
+.cf{font-size:12px;color:#a8ccb2;margin-top:4px;line-height:1.4;min-height:28px}
+.rr{display:flex;align-items:center;gap:5px;margin-top:6px}
+.rl{font-size:10px;font-weight:800;color:#7aab88;text-transform:uppercase}
+.pip{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.12)}
+.pip.on{background:#f2c94c}.pip.rare.on{background:#e84040}
+.cm{margin-top:7px;padding:6px 9px;border-radius:8px;font-size:11px;font-weight:700;line-height:1.4;border:1px solid rgba(232,64,64,.28);background:rgba(232,64,64,.07);color:#ffaaaa;display:none}
+.br{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap}
+.btn{border:none;border-radius:10px;padding:8px 14px;font-weight:800;font-size:13px;cursor:pointer;font-family:inherit;transition:all .12s}
+.btn:hover:not(:disabled){filter:brightness(1.1)}.btn:disabled{opacity:.3;cursor:not-allowed}
+.bg{background:#f2c94c;color:#071a0c}
+.bd{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:#e8f5ec}
+.bx{background:rgba(232,64,64,.1);border:1px solid rgba(232,64,64,.2);color:#ff9090}
+.bleg{background:linear-gradient(135deg,#7c3aed,#4f1da0);color:#fff}
+.pg{height:4px;background:rgba(255,255,255,.07);margin-top:9px;border-radius:4px;overflow:hidden}
+.pf{height:100%;background:linear-gradient(90deg,#17a348,#f2c94c);border-radius:4px;width:0%;transition:width .4s}
+.pb{padding:11px}
+.qd{margin-bottom:9px;display:none}
+.qd .btn{width:100%;font-size:13px;padding:10px}
+.sl-lbl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#7aab88;margin-bottom:6px}
+.pl{display:flex;flex-direction:column;gap:5px;max-height:300px;overflow-y:auto}
+.pl::-webkit-scrollbar{width:3px}.pl::-webkit-scrollbar-thumb{background:rgba(255,255,255,.14);border-radius:3px}
+.pb2{width:100%;display:grid;grid-template-columns:28px 1fr 42px;gap:7px;align-items:center;text-align:left;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:7px 9px;color:#e8f5ec;cursor:pointer;font-family:inherit;transition:background .1s}
+.pb2:hover:not(:disabled){background:rgba(255,255,255,.1)}.pb2:disabled{opacity:.25;cursor:not-allowed}
+.pn{width:24px;height:24px;border-radius:5px;background:rgba(242,201,76,.14);display:grid;place-items:center;font-weight:900;font-size:12px;color:#f2c94c}
+.pnm{font-weight:700;font-size:12px;color:#fff}
+.ps{font-size:10px;color:#7aab88;margin-top:1px}
+.pr{font-size:18px;font-weight:900;color:#fff;text-align:right;min-width:38px}
+.pr.hidden-rat{font-size:20px;color:#7c3aed;text-align:center}
+.pbg{font-size:8px;font-weight:800;text-transform:uppercase;padding:2px 5px;border-radius:99px;text-align:center;margin-top:2px}
+.pp{background:rgba(29,185,84,.15);color:#7dffc0;border:1px solid rgba(29,185,84,.22)}
+.pf2{background:rgba(255,255,255,.06);color:#7aab88;border:1px solid rgba(255,255,255,.09)}
+.sr{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:9px}
+.sb{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:7px 5px;text-align:center}
+.sv{font-size:16px;font-weight:900;color:#fff;line-height:1}
+.sv.g{color:#f2c94c}
+.sll{font-size:9px;font-weight:800;text-transform:uppercase;color:#7aab88;margin-top:2px}
+.hlp{padding:7px 10px;border-radius:8px;font-size:11px;font-weight:700;line-height:1.4;margin-bottom:5px}
+.hw{background:rgba(242,201,76,.07);border:1px solid rgba(242,201,76,.18);color:#ffe8a3}
+.hg{background:rgba(29,185,84,.07);border:1px solid rgba(29,185,84,.18);color:#9dffca}
+.ss{border:1px solid rgba(242,201,76,.15);background:rgba(242,201,76,.03);border-radius:12px;padding:10px;margin-top:9px}
+.stl{font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:#f2c94c;margin-bottom:6px}
+.log{display:flex;flex-direction:column;gap:5px;max-height:220px;overflow-y:auto}
+.log::-webkit-scrollbar{width:3px}.log::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:3px}
+.li{background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.08);border-radius:9px;padding:9px 10px;font-size:12px;line-height:1.55;color:#cce4d3}
+.lh{font-size:14px;font-weight:900;color:#fff;display:block;margin-bottom:2px}
+.wn{color:#7dffc0}.ls{color:#ff9090}
+.ct{font-size:11px;color:#7aab88;font-style:italic;display:block;margin-top:2px}
+.spin{display:inline-block;width:11px;height:11px;border:2px solid rgba(255,255,255,.1);border-top-color:#f2c94c;border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle;margin-right:4px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.ft{position:fixed;bottom:0;left:0;right:0;background:rgba(5,14,8,.93);backdrop-filter:blur(10px);border-top:1px solid rgba(255,255,255,.08);padding:8px 12px}
+.fi{display:flex;gap:7px}.fi .btn{flex:1;font-size:12px;padding:9px}
+.mw{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:99;align-items:center;justify-content:center;padding:14px}
+.mw.op{display:flex}
+.mb{background:#0b1c11;border:1px solid rgba(255,255,255,.15);border-radius:16px;max-width:440px;width:100%;padding:18px;max-height:88vh;overflow-y:auto}
+.mb h2{font-size:24px;font-weight:900;color:#fff;margin-bottom:7px}
+.mt{font-size:13px;color:#a8ccb2;line-height:1.6}
+.mn{margin-top:10px;padding:8px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;font-size:11px;color:#7aab88;font-weight:700;line-height:1.5}
+/* PITCH */
+.pw{padding:9px}
+.pitch{position:relative;width:100%;aspect-ratio:10/15;border-radius:14px;border:2px solid rgba(255,255,255,.18);overflow:hidden;background:#166b3a}
+.pitch canvas.pitch-lines{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
+.pslot{position:absolute;width:76px;min-height:48px;transform:translate(-50%,-50%);z-index:3;border-radius:8px;border:1px solid rgba(255,255,255,.17);background:rgba(4,14,9,.58);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:4px 3px}
+.pslot.in{animation:pop .28s cubic-bezier(.34,1.56,.64,1)}
+@keyframes pop{from{transform:translate(-50%,-50%) scale(.6);opacity:0}to{transform:translate(-50%,-50%) scale(1);opacity:1}}
+.psn{position:absolute;top:2px;left:4px;font-size:8px;font-weight:800;color:rgba(255,255,255,.55)}
+.pspos{font-size:10px;font-weight:800;color:rgba(255,255,255,.7);text-shadow:0 1px 3px rgba(0,0,0,.8)}
+.psnm{font-size:10px;font-weight:800;color:#fff;line-height:1.15;text-shadow:0 1px 4px rgba(0,0,0,.9)}
+.psrat{font-size:16px;font-weight:900;color:#fff;line-height:1;margin-top:1px;text-shadow:0 1px 4px rgba(0,0,0,.9)}
+.psrat.leg{font-size:18px;color:#e0ccff;text-shadow:0 1px 4px rgba(0,0,0,.9)}
+.psco{font-size:8px;font-weight:700;color:rgba(255,255,255,.9);margin-top:1px;text-shadow:0 1px 3px rgba(0,0,0,.8)}
+.shi{position:absolute;inset:0;border-radius:7px;background:linear-gradient(135deg,rgba(255,255,255,.13),transparent 55%);pointer-events:none}
+@media(max-width:560px){.lay{flex-direction:column}.lft,.rgt{flex:none;width:100%}.pslot{width:60px;min-height:42px}.psnm{font-size:9px}.psrat{font-size:13px}}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div><div class="ttl">PICK YOUR 15</div><div class="sub">All-Ireland Legends Draft</div></div>
+  <div class="sk"><div class="sk-n" id="SK">0</div><div class="sk-l">Streak</div></div>
+</div>
+
+<!-- MODE BAR -->
+<div class="mode-bar">
+  <button class="mode-btn active" id="btnClassic" onclick="setMode('classic')">Classic</button>
+  <button class="mode-btn leg" id="btnLegendary" onclick="setMode('legendary')">Legendary</button>
+</div>
+<div class="mode-desc classic" id="modeDesc">Classic mode — ratings visible. Build the best 15 you can.</div>
+
+<div class="lay">
+  <div class="lft">
+    <div class="card">
+      <div class="dh">
+        <div class="lbl">Drawn county</div>
+        <div class="cn" id="CN">Ready</div>
+        <div class="cy" id="CY">&nbsp;</div>
+        <div class="cf" id="CF">Hit Draw to get started. One player per county. Fill all 15 to go to the championship.</div>
+        <div class="rr" id="RR" style="display:none">
+          <span class="rl">Rarity</span>
+          <div class="pip" id="P1"></div><div class="pip" id="P2"></div><div class="pip" id="P3"></div><div class="pip" id="P4"></div><div class="pip" id="P5"></div>
+        </div>
+        <div class="cm" id="CM"></div>
+        <div class="br">
+          <button class="btn bg" onclick="doDraw()">Draw County</button>
+          <button class="btn bx" onclick="doReset()">Reset</button>
+        </div>
+        <div class="pg"><div class="pf" id="PF"></div></div>
+      </div>
+      <div class="pb">
+        <div class="qd" id="QD"><button class="btn bg" onclick="doDraw()">Draw Next County</button></div>
+        <div class="sl-lbl">Choose one man for your panel</div>
+        <div class="pl" id="PL"><div style="color:#7aab88;font-size:12px">Draw a county to see the panel.</div></div>
+        <div class="sr">
+          <div class="sb"><div class="sv g" id="SF">0/15</div><div class="sll">Filled</div></div>
+          <div class="sb"><div class="sv" id="SA">&#8212;</div><div class="sll">Avg</div></div>
+          <div class="sb"><div id="SS" style="font-size:14px;min-height:16px;line-height:1.3">&#8212;</div><div class="sll">Rating</div></div>
+        </div>
+        <div class="br" style="margin-top:9px">
+          <button class="btn bd" id="CB" onclick="startChamp()" disabled style="flex:1">Go to the Championship</button>
+        </div>
+        <div class="ss">
+          <div class="stl">Championship board</div>
+          <div class="log" id="LG"><div style="color:#7aab88;font-size:12px">Fill your 15 to unlock the championship.</div></div>
+        </div>
+        <div style="color:#2a4a30;font-size:11px;font-weight:700;margin-top:10px;line-height:1.5">Sam Maguire does not come easy.</div>
+      </div>
+    </div>
+  </div>
+  <div class="rgt">
+    <div class="card pw">
+      <div class="pitch" id="PT">
+        <canvas class="pitch-lines" id="pitchCanvas"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="ft"><div class="fi">
+  <button class="btn bg" onclick="doDraw()">Draw County</button>
+  <button class="btn bd" id="CB2" onclick="startChamp()" disabled>Championship</button>
+  <button class="btn bd" id="SHB" onclick="doShare()" disabled>Share PNG</button>
+</div></div>
+
+<!-- MODAL -->
+<div class="mw" id="MW" onclick="if(event.target===this)closeMW()">
+  <div class="mb">
+    <h2 id="MT"></h2>
+    <div class="mt" id="MB"></div>
+    <div class="mn" id="MN" style="display:none"></div>
+    <div class="br" style="margin-top:12px">
+      <button class="btn bg" onclick="closeMW()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Hidden canvas for share image -->
+<canvas id="shareCanvas" style="display:none"></canvas>
+
+<script>
+var CC={
+  Kerry:['#1a7a3c','#f0c030'],
+  Dublin:['#4a90d9','#071d49'],
+  Tyrone:['#ffffff','#cc1122'],
+  Donegal:['#f0c030','#1a7a3c'],
+  Armagh:['#ff7700','#ffffff'],
+  Galway:['#8b0000','#ffffff'],
+  Meath:['#0a7a32','#f0c030'],
+  Derry:['#cc1122','#ffffff'],
+  Mayo:['#1a6e30','#cc0000'],
+  Cork:['#cc0000','#ffffff'],
+  Offaly:['#1a6e1a','#f0c030'],
+  Down:['#cc0000','#111111'],
+  Roscommon:['#1a3a8a','#f0c030'],
+  Louth:['#cc0000','#ffffff'],
+  Kildare:['#e8e8e8','#1a6e30']
+}
+function tc(h){var light=['#f0c030','#f2c94c','#ffd700','#e8e8e8','#ffffff','#ff7700'];return light.indexOf(h.toLowerCase())>=0?'#071a0c':'#ffffff';}
+
+var POS={1:[50,90,'GK'],2:[22,77,'CB'],3:[50,77,'FB'],4:[78,77,'CB'],5:[16,62,'LHB'],6:[50,62,'CHB'],7:[84,62,'RHB'],8:[37,49,'MF'],9:[63,49,'MF'],10:[16,36,'LHF'],11:[50,36,'CHF'],12:[84,36,'RHF'],13:[22,21,'CF'],14:[50,21,'FF'],15:[78,21,'CF']};
+var GRP={1:[1],2:[2,3,4],3:[2,3,4],4:[2,3,4],5:[5,6,7],6:[5,6,7],7:[5,6,7],8:[8,9],9:[8,9],10:[10,11,12],11:[10,11,12],12:[10,11,12],13:[13,14,15],14:[13,14,15],15:[13,14,15]};
+var PN={1:'Keeper',2:'Full-back',3:'Full-back',4:'Full-back',5:'Half-back',6:'Half-back',7:'Half-back',8:'Midfield',9:'Midfield',10:'Half-fwd',11:'Half-fwd',12:'Half-fwd',13:'Full-fwd',14:'Full-fwd',15:'Full-fwd'};
+
+var T=[
+{c:'Kerry',y:1975,r:93,rare:5,f:"O'Dwyer's Golden Years. The Kingdom were unstoppable.",pl:[[1,86,'P. O Mahony'],[2,89,'G. O Keeffe'],[3,94,'J. O Keeffe'],[4,88,'M. O Sullivan'],[5,91,'P. Lynch'],[6,90,'T. Kennelly'],[7,93,'G. Power'],[8,88,'P. McCarthy'],[9,96,'J. O Shea'],[10,90,'D. Ogie Moran'],[11,97,'P. Spillane'],[12,87,'B. Lynch'],[13,91,'J. Egan'],[14,96,'M. Sheehy'],[15,93,'E. Liston']]},
+{c:'Kerry',y:1978,r:95,rare:5,f:'Four-in-a-row. Spillane and Sheehy at their peak.',pl:[[1,88,'C. Nelligan'],[2,90,'G. O Keeffe'],[3,95,'J. O Keeffe'],[4,89,'P. Lynch'],[5,92,'T. Kennelly'],[6,90,'T. Doyle'],[7,94,'G. Power'],[8,98,'J. O Shea'],[9,91,'S. Walsh'],[10,91,'D. Ogie Moran'],[11,97,'P. Spillane'],[12,96,'M. Sheehy'],[13,93,'J. Egan'],[14,95,'E. Liston'],[15,94,'M. Sheehy']]},
+{c:'Kerry',y:1984,r:94,rare:5,f:"Five All-Irelands in eight years. The last great O'Dwyer side.",pl:[[1,91,'C. Nelligan'],[2,89,'G. O Keeffe'],[3,94,'J. O Keeffe'],[4,88,'M. Spillane'],[5,95,'P. O Se'],[6,91,'T. Kennelly'],[7,93,'G. Power'],[8,98,'J. O Shea'],[9,88,'A. O Donovan'],[10,90,'T. Doyle'],[11,97,'P. Spillane'],[12,91,'D. Ogie Moran'],[13,92,'J. Egan'],[14,95,'E. Liston'],[15,96,'M. Sheehy']]},
+{c:'Kerry',y:2004,r:92,rare:3,f:"The Gooch era begins. A new Kerry dynasty.",pl:[[1,88,'D. Murphy'],[2,94,'M. O Se'],[3,89,'M. McCarthy'],[4,88,'T. O Sullivan'],[5,96,'T. O Se'],[6,93,'S. Moynihan'],[7,86,'K. Young'],[8,95,'D. O Se'],[9,87,'W. Kirby'],[10,91,'D. O Sullivan'],[11,92,'P. Galvin'],[12,89,'E. Brosnan'],[13,97,'C. Cooper'],[14,93,'D. O Cinneide'],[15,90,'M. Russell']]},
+{c:'Kerry',y:2009,r:93,rare:4,f:'Gooch, Donaghy and the O Se brothers. The Kingdom at their best.',pl:[[1,88,'D. Murphy'],[2,95,'M. O Se'],[3,89,'T. O Sullivan'],[4,90,'A. O Mahony'],[5,96,'T. O Se'],[6,88,'M. McCarthy'],[7,86,'K. Young'],[8,96,'D. O Se'],[9,87,'S. Scanlon'],[10,94,'P. Galvin'],[11,93,'D. O Sullivan'],[12,90,'T. Kennelly'],[13,97,'C. Cooper'],[14,95,'K. Donaghy'],[15,90,'D. O Sullivan']]},
+{c:'Kerry',y:2022,r:93,rare:3,f:"Clifford's coronation. Sam after an eight-year wait.",pl:[[1,89,'S. Ryan'],[2,90,'J. Foley'],[3,92,'T. Morley'],[4,91,'T. O Sullivan'],[5,90,'G. White'],[6,91,'P. Murphy'],[7,88,'B. O Beaglaoich'],[8,91,'D. Moran'],[9,89,'J. Barry'],[10,89,'S. O Brien'],[11,94,'S. O Shea'],[12,87,'A. Spillane'],[13,87,'T. Brosnan'],[14,99,'D. Clifford'],[15,92,'P. Clifford']]},
+{c:'Kerry',y:2025,r:94,rare:3,f:"Back-to-back! The Cliffords lead Kerry to their 39th All-Ireland.",pl:[[1,90,'S. Ryan'],[2,91,'P. Murphy'],[3,92,'J. Foley'],[4,89,'D. Casey'],[5,88,'B. O Beaglaoich'],[6,90,'M. Breen'],[7,93,'G. White'],[8,90,'S. O Brien'],[9,88,'M. O Shea'],[10,89,'J. O Connor'],[11,94,'S. O Shea'],[12,88,'G. O Sullivan'],[13,93,'P. Clifford'],[14,99,'D. Clifford'],[15,88,'D. Geaney']]},
+{c:'Dublin',y:2011,r:90,rare:3,f:"Cluxton's free. The start of a dynasty.",pl:[[1,97,'S. Cluxton'],[2,88,'M. Fitzsimons'],[3,92,'R. O Carroll'],[4,89,'P. McMahon'],[5,90,'K. Nolan'],[6,91,'G. Brennan'],[7,92,'P. Flynn'],[8,89,'B. Cullen'],[9,87,'D. Bastick'],[10,87,'R. McConnell'],[11,91,'C. Kilkenny'],[12,94,'A. Brogan'],[13,95,'B. Brogan'],[14,90,'K. McManamon'],[15,88,'E. O Gara']]},
+{c:'Dublin',y:2015,r:93,rare:3,f:"Jim Gavin's machine hits full stride.",pl:[[1,97,'S. Cluxton'],[2,91,'P. McMahon'],[3,93,'R. O Carroll'],[4,90,'J. Cooper'],[5,93,'J. McCarthy'],[6,93,'C. O Sullivan'],[7,95,'J. McCaffrey'],[8,96,'B. Fenton'],[9,88,'D. Bastick'],[10,94,'D. Connolly'],[11,93,'C. Kilkenny'],[12,91,'P. Flynn'],[13,95,'B. Brogan'],[14,91,'D. Rock'],[15,91,'K. McManamon']]},
+{c:'Dublin',y:2018,r:95,rare:3,f:'Four-in-a-row sealed. A historic Dublin team at their dominant peak.',pl:[[1,97,'S. Cluxton'],[2,91,'P. McMahon'],[3,90,'J. Cooper'],[4,91,'M. Fitzsimons'],[5,94,'J. McCarthy'],[6,93,'C. O Sullivan'],[7,96,'J. McCaffrey'],[8,98,'B. Fenton'],[9,90,'M. Macauley'],[10,88,'N. Scully'],[11,95,'C. Kilkenny'],[12,93,'P. Mannion'],[13,92,'D. Rock'],[14,95,'C. O Callaghan'],[15,91,'B. Howard']]},
+{c:'Dublin',y:2020,r:94,rare:4,f:'Five in a row behind closed doors. History is history.',pl:[[1,96,'S. Cluxton'],[2,91,'P. McMahon'],[3,90,'J. Cooper'],[4,90,'M. Fitzsimons'],[5,94,'J. McCarthy'],[6,92,'C. O Sullivan'],[7,95,'J. McCaffrey'],[8,97,'B. Fenton'],[9,89,'M. Macauley'],[10,87,'N. Scully'],[11,94,'C. Kilkenny'],[12,92,'P. Mannion'],[13,91,'D. Rock'],[14,95,'C. O Callaghan'],[15,90,'B. Howard']]},
+{c:'Tyrone',y:2003,r:90,rare:3,f:"Mickey Harte's revolution. Ulster football reimagined.",pl:[[1,84,'J. Devine'],[2,88,'R. McMenamin'],[3,94,'C. McAnallen'],[4,90,'C. Gormley'],[5,89,'P. Jordan'],[6,93,'B. Dooher'],[7,84,'D. Harte'],[8,94,'S. Cavanagh'],[9,87,'K. Hughes'],[10,91,'B. McGuigan'],[11,94,'S. O Neill'],[12,85,'T. McGuigan'],[13,92,'O. Mulligan'],[14,97,'P. Canavan'],[15,88,'E. McGinley']]},
+{c:'Tyrone',y:2005,r:92,rare:3,f:"Two All-Irelands in three years. Canavan's last hurrah.",pl:[[1,85,'J. Devine'],[2,89,'R. McMenamin'],[3,93,'C. McAnallen'],[4,91,'C. Gormley'],[5,90,'P. Jordan'],[6,93,'B. Dooher'],[7,85,'D. Harte'],[8,95,'S. Cavanagh'],[9,88,'K. Hughes'],[10,92,'B. McGuigan'],[11,95,'S. O Neill'],[12,86,'T. McGuigan'],[13,93,'O. Mulligan'],[14,97,'P. Canavan'],[15,89,'E. McGinley']]},
+{c:'Tyrone',y:2008,r:91,rare:3,f:'Three All-Irelands in six years. The Cavanagh era.',pl:[[1,85,'J. Devine'],[2,90,'C. Cavanagh'],[3,92,'C. Gormley'],[4,90,'P. Jordan'],[5,89,'R. McMenamin'],[6,93,'B. Dooher'],[7,87,'K. Hughes'],[8,96,'S. Cavanagh'],[9,90,'J. McMahon'],[10,91,'B. McGuigan'],[11,94,'S. O Neill'],[12,92,'O. Mulligan'],[13,87,'M. Penrose'],[14,87,'T. McGuigan'],[15,86,'R. McMenamin']]},
+{c:'Donegal',y:1992,r:87,rare:4,f:"Donegal's first Sam. A county goes absolutely mad.",pl:[[1,86,'G. Walsh'],[2,85,'B. McGowan'],[3,88,'M. Gallagher'],[4,86,'D. Reid'],[5,87,'N. Hegarty'],[6,90,'M. Gavigan'],[7,88,'D. Bonner'],[8,87,'B. Murray'],[9,91,'A. Molloy'],[10,88,'J. McMullin'],[11,93,'M. McHugh'],[12,85,'T. Ryan'],[13,94,'M. Boyle'],[14,91,'T. Boyle'],[15,87,'J. McHugh']]},
+{c:'Donegal',y:2012,r:91,rare:3,f:'McGuinness changes the game. Murphy leads Donegal.',pl:[[1,91,'P. Durcan'],[2,86,'P. McGrath'],[3,91,'N. McGee'],[4,88,'E. McGee'],[5,90,'F. McGlynn'],[6,95,'K. Lacey'],[7,87,'A. Thompson'],[8,89,'N. Gallagher'],[9,87,'R. Kavanagh'],[10,91,'M. McHugh'],[11,86,'L. McLoone'],[12,85,'R. Bradley'],[13,90,'P. McBrearty'],[14,96,'M. Murphy'],[15,93,'C. McFadden']]},
+{c:'Armagh',y:2002,r:89,rare:3,f:"McGeeney lifts Sam. Armagh come from four down to beat Kerry.",pl:[[1,86,'B. Tierney'],[2,87,'E. McNulty'],[3,91,'J. McNulty'],[4,88,'F. Bellew'],[5,89,'A. O Rourke'],[6,96,'K. McGeeney'],[7,88,'A. McCann'],[8,88,'J. Toal'],[9,90,'P. McGrane'],[10,87,'P. McKeever'],[11,86,'J. McEntee'],[12,93,'O. McConville'],[13,94,'S. McDonnell'],[14,90,'R. Clarke'],[15,89,'D. Marsden']]},
+{c:'Galway',y:1998,r:88,rare:3,f:'Padraic Joyce announces himself on the biggest stage.',pl:[[1,86,'M. McNamara'],[2,88,'T. Mannion'],[3,87,'G. Fahey'],[4,88,'K. Fitzgerald'],[5,89,'S. de Paor'],[6,90,'R. Silke'],[7,88,'D. Meehan'],[8,92,'K. Walsh'],[9,91,'J. Fallon'],[10,90,'J. Fallon'],[11,96,'P. Joyce'],[12,94,'M. Donnellan'],[13,89,'D. Savage'],[14,88,'N. Finnegan'],[15,86,'S. O Domhnaill']]},
+{c:'Galway',y:2001,r:89,rare:3,f:'Back to back. Joyce and Donnellan reign supreme.',pl:[[1,85,'A. Keane'],[2,89,'K. Fitzgerald'],[3,88,'G. Fahey'],[4,87,'T. Mannion'],[5,89,'D. Meehan'],[6,94,'M. Donnellan'],[7,90,'S. de Paor'],[8,91,'K. Walsh'],[9,87,'P. Clancy'],[10,90,'J. Fallon'],[11,95,'P. Joyce'],[12,89,'D. Savage'],[13,87,'S. O Domhnaill'],[14,88,'N. Finnegan'],[15,86,'M. Clancy']]},
+{c:'Meath',y:1987,r:88,rare:4,f:"Sean Boylan's Royals. A golden era begins.",pl:[[1,87,'M. McQuillan'],[2,88,'B. O Malley'],[3,93,'M. Lyons'],[4,87,'T. Ferguson'],[5,88,'C. Coyle'],[6,89,'L. Harnan'],[7,91,'M. O Connell'],[8,90,'L. Hayes'],[9,89,'G. McEntee'],[10,88,'P. Gillic'],[11,90,'B. Stafford'],[12,94,'C. O Rourke'],[13,89,'B. Flynn'],[14,87,'J. Cassells'],[15,86,'C. Brady']]},
+{c:'Meath',y:1996,r:90,rare:4,f:"Jayo's debut. Meath beat Mayo after a brutal saga.",pl:[[1,87,'C. Sullivan'],[2,89,'M. O Reilly'],[3,93,'D. Fay'],[4,87,'P. Reynolds'],[5,88,'C. Murphy'],[6,88,'E. McManus'],[7,93,'G. Geraghty'],[8,91,'J. McDermott'],[9,88,'B. Reilly'],[10,92,'T. Dowd'],[11,95,'T. Giles'],[12,88,'B. Callaghan'],[13,87,'B. Reilly'],[14,89,'E. Kelly'],[15,90,'T. Dowd']]},
+{c:'Down',y:1991,r:89,rare:4,f:'Ross Carr and Greg Blaney light up Croke Park.',pl:[[1,87,'N. Collins'],[2,87,'B. McKernan'],[3,90,'B. Breen'],[4,89,'C. Deegan'],[5,90,'D. Kane'],[6,91,'P. O Rourke'],[7,88,'E. Burns'],[8,93,'R. Carr'],[9,88,'B. Breen'],[10,94,'M. Linden'],[11,93,'G. Blaney'],[12,87,'A. Rodgers'],[13,93,'J. McCartan'],[14,88,'G. Mason'],[15,86,'P. Withnell']]},
+{c:'Derry',y:1993,r:89,rare:4,f:"Derry's one and only. Tohill, McGilligan and Gormley — the day Ulster claimed Sam.",pl:[[1,86,'D. McCusker'],[2,88,'K. McKeever'],[3,91,'T. Scullion'],[4,87,'F. McCusker'],[5,88,'J. McGurk'],[6,93,'H. Downey'],[7,90,'G. Coleman'],[8,95,'A. Tohill'],[9,91,'B. McGilligan'],[10,87,'D. Heaney'],[11,88,'D. Barton'],[12,89,'D. Cassidy'],[13,89,'J. Brolly'],[14,90,'S. Downey'],[15,92,'E. Gormley']]},
+{c:'Cork',y:1990,r:88,rare:4,f:'Back-to-back Rebels. Tompkins leads Cork to glory.',pl:[[1,87,'J. Kerins'],[2,86,'T. Nation'],[3,91,'N. Cahalane'],[4,88,'S. O Brien'],[5,90,'C. Counihan'],[6,88,'S. Fahy'],[7,89,'T. McCarthy'],[8,88,'S. Fahy'],[9,90,'D. Barry'],[10,87,'B. Coffey'],[11,95,'L. Tompkins'],[12,88,'C. O Brien'],[13,87,'J. O Driscoll'],[14,88,'J. Kerrigan'],[15,88,'T. Davis']]},
+{c:'Offaly',y:1982,r:87,rare:5,f:"Darby's goal stopped Kerry's five-in-a-row. An all-time moment.",pl:[[1,88,'M. Furlong'],[2,86,'L. Currams'],[3,89,'S. Lowry'],[4,85,'P. Fitzgerald'],[5,88,'T. Connor'],[6,90,'R. Connor'],[7,87,'A. O Halloran'],[8,88,'G. Carroll'],[9,87,'B. Lowry'],[10,87,'J. Mooney'],[11,89,'J. Mooney'],[12,96,'M. Connor'],[13,88,'S. Darby'],[14,86,'S. Lowry'],[15,84,'M. Lowry']]},
+{c:'Mayo',y:1951,r:85,rare:5,f:"Mayo's last All-Ireland. The start of the legend.",pl:[[1,83,'S. Wynne'],[2,84,'J. Forde'],[3,87,'P. Prendergast'],[4,84,'S. Regan'],[5,88,'E. Mongey'],[6,86,'H. Dixon'],[7,90,'S. Flanagan'],[8,85,'S. Mulderrig'],[9,84,'P. Quinn'],[10,86,'M. Flanagan'],[11,88,'T. Langan'],[12,84,'J. Gilvarry'],[13,84,'P. Solan'],[14,85,'B. Kenny'],[15,89,'P. Carney']]},
+{c:'Roscommon',y:1944,r:82,rare:5,f:'Ancient Roscommon royalty. A very rare draw.',pl:[[1,82,'O. Hoare'],[2,83,'B. Jackson'],[3,84,'J. Nerney'],[4,83,'F. Kinlough'],[5,86,'J. Murray'],[6,85,'B. Lynch'],[7,86,'P. Murray'],[8,85,'E. Boland'],[9,84,'L. Diffley'],[10,84,'F. Kinlough'],[11,85,'J. Nerney'],[12,86,'D. Keenan'],[13,83,'E. Boland'],[14,84,'J. Fahey'],[15,83,'T. Doherty']]},
+{c:'Louth',y:1957,r:83,rare:5,f:"The Wee County's finest hour. The last non-Dublin Leinster county to win Sam Maguire.",pl:[[1,83,'S. Thornton'],[2,84,'P. Coleman'],[3,85,'J. Thornton'],[4,84,'K. Beahan'],[5,85,'S. Kelly'],[6,87,'S. White'],[7,84,'F. Lynch'],[8,85,'S. Cunningham'],[9,84,'J. McDonnell'],[10,84,'T. Conlon'],[11,85,'S. Boyle'],[12,84,'P. Markey'],[13,83,'T. Conlon'],[14,85,'E. Boyle'],[15,83,'J. McArdle']]},
+];
+
+var WIN_C=['The backs were immense throughout.','Never in doubt once they hit their stride.','A dominant second-half sealed it.','Gritty and hard-won — just the way it is.','The half-back line controlled the game completely.','Midfield bossed it from start to finish.','The full-forward line caused havoc all afternoon.','Pure class. First whistle to last.','Survived an early scare and never looked back.','A captain\'s display that lifted the whole side.'];
+var CLOSE_C=['Hanging on for dear life at the end.','A point in it at the final whistle. Savage.','Every score cheered like a goal. Incredible tension.','Nerves of steel in the closing stages.','As tight as it gets. Heart in your mouth stuff.'];
+var LOSS_C=['Defence exposed too often in the second half.','Wasted chances in front of goal proved costly.','Midfield was overrun and the whole side suffered.','A devastating late goal ended all hope.','Three wides in a row at a crucial stage. Heartbreaking.','Conceded a soft goal before half-time and never recovered.','The sweeper system nullified every attacking move.','Ran out of steam in the final quarter — cruel.','A harsh sending off changed the whole game.','The lads gave everything but it was not enough today.'];
+var ROUNDS=['Round 1 Qualifier','Round 2 Qualifier','All-Ireland Round of 16','All-Ireland QF','All-Ireland Semi-Final','All-Ireland Final'];
+
+var cur=null, squad=new Array(16).fill(null), used=new Set(), streak=0, going=false, mode='classic';
+
+function $(i){return document.getElementById(i);}
+function rnd(a){return a[Math.floor(Math.random()*a.length)];}
+function openSlot(pos){var g=GRP[pos]||[pos];if(!squad[pos])return pos;for(var i=0;i<g.length;i++)if(!squad[g[i]])return g[i];return null;}
+function filled(){return squad.filter(Boolean).length;}
+
+function setMode(m){
+  mode=m;
+  $('btnClassic').className='mode-btn'+(m==='classic'?' active':'');
+  $('btnLegendary').className='mode-btn leg'+(m==='legendary'?' active':'');
+  var md=$('modeDesc');
+  if(m==='legendary'){
+    md.className='mode-desc legendary';
+    md.textContent='Legendary mode — ratings hidden. Pick on instinct. Reveal only after the championship.';
+  } else {
+    md.className='mode-desc classic';
+    md.textContent='Classic mode — ratings visible. Build the best 15 you can.';
+  }
+  if(cur) renderP();
+  drawPitch();
+}
+
+function doDraw(){
+  if(going)return;
+  var open=[];for(var i=1;i<=15;i++)if(!squad[i])open.push(i);
+  if(!open.length){showM('Foireann lan!','Your 15 is already picked!','Head to the Championship!');return;}
+  var pool=T.filter(function(t){return !used.has(t.c+t.y)&&t.pl.some(function(p){return openSlot(p[0]);});});
+  if(!pool.length)pool=T.filter(function(t){return t.pl.some(function(p){return openSlot(p[0]);});});
+  if(!pool.length){showM('Mi-adh mor!','No valid picks left.','Reset and try again.');return;}
+  var w=pool.map(function(t){var v=1;if(!used.has(t.c+t.y))v*=2;if(t.rare>=4)v*=(t.rare===5?2.5:1.7);if(t.r<87)v*=1.6;return v;});
+  var tot=w.reduce(function(a,b){return a+b;},0),rv=Math.random()*tot;
+  cur=pool[pool.length-1];
+  for(var i=0;i<pool.length;i++){rv-=w[i];if(rv<=0){cur=pool[i];break;}}
+  used.add(cur.c+cur.y);
+  $('CN').textContent=cur.c;
+  $('CY').textContent=cur.y+' All-Ireland Winners';
+  $('CF').textContent=cur.f;
+  $('RR').style.display='flex';
+  for(var i=1;i<=5;i++){var p=$('P'+i);p.className='pip'+(i<=cur.rare?' on'+(cur.rare>=4?' rare':''):'');}
+  var fits=cur.pl.filter(function(p){return openSlot(p[0]);}).length;
+  var cm=$('CM');
+  if(fits<=2){cm.textContent='Only '+fits+' player'+(fits===1?'':'s')+' from '+cur.c+' fit your open lines!';cm.style.display='block';}
+  else if(cur.rare>=4&&Math.random()<.3){cm.textContent='Rare draw — '+cur.c+' '+cur.y+' (rarity '+cur.rare+'/5). Do not waste this!';cm.style.display='block';}
+  else cm.style.display='none';
+  renderP();
+}
+
+function renderP(){
+  var box=$('PL');box.innerHTML='';
+  if(!cur){box.innerHTML='<div style="color:#7aab88;font-size:12px">Draw a county to see the panel.</div>';return;}
+  var avl=cur.pl.filter(function(p){return openSlot(p[0]);});
+  var tak=cur.pl.filter(function(p){return !openSlot(p[0]);});
+  if(!avl.length){var d=document.createElement('div');d.className='hlp hw';d.textContent='No player from '+cur.c+' fits your open lines. Draw again.';box.appendChild(d);return;}
+  var f=filled();
+  if(f>=9){var h=document.createElement('div');h.className='hlp hg';var op=[];for(var i=1;i<=15;i++)if(!squad[i])op.push(i+'('+POS[i][2]+')');h.textContent='Home stretch! Open: '+op.join(' ');box.appendChild(h);}
+  avl.concat(tak).forEach(function(p){
+    var pos=p[0],rat=p[1],nm=p[2],sl=openSlot(pos);
+    var b=document.createElement('button');
+    b.className='pb2';b.disabled=!sl;
+    if(sl)(function(n,po,ra){b.onclick=function(){pickP(n,po,ra);};})(nm,pos,rat);
+    var goes=sl?(sl===pos?'Slot '+sl:'\u2192 Slot '+sl+' ('+POS[sl][2]+')'):'Line full';
+    var ratHtml=mode==='legendary'
+      ?'<div class="pr hidden-rat">?</div>'
+      :'<div class="pr">'+rat+'</div>';
+    b.innerHTML='<div class="pn">'+pos+'</div><div><div class="pnm">'+nm+'</div><div class="ps">'+PN[pos]+' \u00b7 '+goes+'</div></div><div style="text-align:center">'+ratHtml+'<div class="pbg '+(sl?'pp':'pf2')+'">'+(sl?'Pick':'Full')+'</div></div>';
+    box.appendChild(b);
+  });
+}
+
+function pickP(nm,pos,rat){
+  var sl=openSlot(pos);if(!sl)return;
+  squad[sl]={name:nm,pos:sl,rat:rat,county:cur.c,year:cur.y};
+  cur=null;var f=filled();
+  $('CN').textContent='Picked!';$('CY').textContent='Draw the next county';$('CF').textContent='Good man. Draw again to keep building.';
+  $('CM').style.display='none';$('RR').style.display='none';
+  if(f>0)$('QD').style.display='block';
+  var ratTxt=mode==='legendary'?'Rating hidden':'Rating '+rat;
+  $('LG').innerHTML='<div class="li"><span class="lh">'+nm+' \u2014 Slot '+sl+' ('+POS[sl][2]+')</span>'+cur||'';
+  $('LG').innerHTML='<div class="li"><span class="lh">'+nm+' \u2014 Slot '+sl+' ('+POS[sl][2]+')</span>'+ratTxt+' \u00b7 '+f+'/15 on the panel</div>';
+  drawPitch();updateStats();renderP();
+  if(f===15)$('LG').innerHTML='<div class="li hg">Your 15 is complete. Head to the Championship!</div>';
+}
+
+function starsH(avg){
+  var s=avg>=93?5:avg>=90?4:avg>=87?3:avg>=84?2:1;
+  return '<span style="color:#f2c94c">'+'&#9733;'.repeat(s)+'</span><span style="color:#2a4a30">'+'&#9733;'.repeat(5-s)+'</span>';
+}
+function updateStats(){
+  var p=squad.filter(Boolean),n=p.length;
+  $('SF').textContent=n+'/15';
+  var avg=n?Math.round(p.reduce(function(a,b){return a+b.rat;},0)/n):0;
+  if(mode==='legendary'){
+    $('SA').textContent='?';
+    $('SS').innerHTML=n>=15?starsH(avg):(n>=3?'<span style="color:#a78bfa">'+n+' picked</span>':'&#8212;');
+  } else {
+    $('SA').textContent=n?avg:'\u2014';
+    $('SS').innerHTML=n>=3?starsH(avg):'\u2014';
+  }
+  var rdy=n===15&&!going;
+  $('CB').disabled=!rdy;$('CB2').disabled=!rdy;$('SHB').disabled=n<15;
+  $('PF').style.width=(n/15*100)+'%';
+}
+
+function mkSc(ms,os){
+  // Typical inter-county: 12-17 score units per side, goals rare (~1 per 4 games)
+  var base=12+Math.floor(Math.random()*4),d=(ms-os)*0.12;
+  var mu=Math.round(base+d+(Math.random()*2-1));
+  var tu=Math.round(base-d+(Math.random()*2-1));
+  mu=Math.max(8,Math.min(mu,22));tu=Math.max(7,Math.min(tu,21));
+  function f(u){
+    // ~20% chance of exactly 1 goal, ~5% chance of 2 goals
+    var r=Math.random(),g=0;
+    if(r<0.05&&u>9){g=2;u-=6;}else if(r<0.22&&u>6){g=1;u-=3;}
+    u=Math.max(0,u);
+    return{g:g,p:u,u:g*3+u,str:g+'-'+String(u).padStart(2,'0')};
+  }
+  return{my:f(mu),th:f(tu)};
+}
+
+var lastResults=[];
+function startChamp(){
+  if(going||filled()<15)return;
+  going=true;$('CB').disabled=true;$('CB2').disabled=true;
+  var p=squad.filter(Boolean);
+  var avg=p.reduce(function(a,b){return a+b.rat;},0)/15;
+  var log=$('LG');
+  if(mode==='legendary'){
+    var revealHtml='<div class="li" style="border-color:rgba(124,58,237,.3);background:rgba(124,58,237,.06)"><span class="lh" style="color:#a78bfa">Ratings revealed!</span>';
+    p.forEach(function(pl){revealHtml+=pl.name+' — Rating: <strong style="color:#f2c94c">'+pl.rat+'</strong><br>';});
+    revealHtml+='Avg: <strong style="color:#f2c94c">'+Math.round(avg)+'</strong> · '+starsH(Math.round(avg))+'</div>';
+    log.innerHTML=revealHtml;
+    updateStats();
+  } else {
+    log.innerHTML='<div class="li"><span class="lh">Championship begins!</span><span class="spin"></span> The lads are togging out...</div>';
+  }
+  var opps=[...T].sort(function(){return Math.random()-.5;}).slice(0,6);
+  var results=opps.map(function(o,i){
+    var boost=i>=5?3.5:i>=4?2.5:i>=3?1.5:i>=2?0.8:0.2;
+    var os=o.r+boost+(Math.random()*4-1.5);
+    var ms=avg+(Math.random()*5-2.5)-0.8;
+    var sc=mkSc(ms,os);
+    var won=ms>os;
+    if(won&&sc.my.u<sc.th.u){var t=sc.my;sc.my=sc.th;sc.th=t;}
+    if(!won&&sc.my.u>sc.th.u){var t=sc.my;sc.my=sc.th;sc.th=t;}
+    var margin=Math.abs(sc.my.u-sc.th.u);
+    var fwds=p.filter(function(x){return x.pos>=10;});
+    if(!fwds.length)fwds=p;
+    var scorer=fwds[Math.floor(Math.random()*fwds.length)];
+    var sG=won?(Math.random()<0.25?1:0):0;
+    var sP=won?2+Math.floor(Math.random()*6):Math.floor(Math.random()*3);
+    return{opp:o,won:won,sc:sc,margin:margin,round:ROUNDS[Math.min(i,5)],
+      comment:won?(margin<=2?rnd(CLOSE_C):rnd(WIN_C)):rnd(LOSS_C),
+      scorer:scorer,sG:sG,sP:sP};
+  });
+  lastResults=results;
+  var alive=true,idx=0;
+  function next(){
+    if(!alive||idx>=results.length){
+      going=false;updateStats();
+      if(alive){
+        streak++;$('SK').textContent=streak;
+        var best=getBestScorer(results.filter(function(r){return r.won;}));
+        var scorerTxt=best?best.name+' ('+best.g+'-'+String(best.p).padStart(2,'0')+')':'—';
+        log.innerHTML+='<div class="li" style="border-color:rgba(242,201,76,.35);background:rgba(242,201,76,.05)"><span class="lh" style="color:#f2c94c">🏆 Sam Maguire is yours!</span>Top scorer: <strong style="color:#f2c94c">'+scorerTxt+'</strong><br>Streak: '+streak+'</div>';
+        showM('Sam Maguire!','Your dream 15 went all the way!<br><br>Top scorer: <strong>'+scorerTxt+'</strong><br><br>Hit <strong>Share PNG</strong> to get your summary card.','Tag it <strong>#PickYour15</strong>');
+      }
+      return;
+    }
+    var res=results[idx],id='r'+Date.now()+idx;
+    log.innerHTML+='<div class="li" id="'+id+'"><span class="lh">'+res.round+'</span><span class="spin"></span> vs '+res.opp.c+' '+res.opp.y+'...</div>';
+    log.scrollTop=log.scrollHeight;
+    setTimeout(function(){
+      var el=document.getElementById(id);if(!el)return;
+      var vcls=res.won?'wn':'ls',vw=res.won?'Bua':'Cailliúint';
+      var scorerLine=res.won?('<span class="ct">👓 '+res.scorer.name+' '+res.sG+'-'+String(res.sP).padStart(2,'0')+'</span>'):'';
+      el.innerHTML='<span class="lh">'+res.round+'</span>vs '+res.opp.c+' '+res.opp.y+'<br><span class="'+vcls+'">'+vw+' — '+res.sc.my.str+' to '+res.sc.th.str+'</span><span class="ct">'+res.comment+'</span>'+scorerLine;
+      log.scrollTop=log.scrollHeight;
+      if(!res.won){
+        going=false;updateStats();
+        var best=getBestScorer(results.slice(0,idx+1).filter(function(r){return r.won;}));
+        var scorerTxt=best?best.name+' ('+best.g+'-'+String(best.p).padStart(2,'0')+')':'—';
+        log.innerHTML+='<div class="li"><span class="lh">Championship over.</span><span class="ct">Top scorer: '+scorerTxt+'. Hard luck — reset and go again!</span></div>';
+        return;
+      }
+      idx++;setTimeout(next,1600);
+    },1800);
+  }
+  setTimeout(next,mode==='legendary'?1400:900);
+}
+function getBestScorer(wonResults){
+  var totals={};
+  wonResults.forEach(function(r){
+    if(!r.scorer)return;
+    var k=r.scorer.name;
+    if(!totals[k])totals[k]={name:k,g:0,p:0};
+    totals[k].g+=r.sG;totals[k].p+=r.sP;
+  });
+  var best=null;
+  Object.values(totals).forEach(function(s){if(!best||(s.g*3+s.p)>(best.g*3+best.p))best=s;});
+  return best;
+}
+function drawPitchLines(){
+  var cv=document.getElementById('pitchCanvas');
+  if(!cv)return;
+  var p=document.getElementById('PT');
+  cv.width=p.offsetWidth||320;cv.height=p.offsetHeight||480;
+  var W=cv.width,H=cv.height;
+  var ctx=cv.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+
+  // Grass stripes
+  var stripes=8;
+  for(var i=0;i<stripes;i++){
+    ctx.fillStyle=i%2===0?'#166b3a':'#1a7a42';
+    ctx.fillRect(0,i*(H/stripes),W,H/stripes);
+  }
+
+  var lc='rgba(255,255,255,0.55)';
+  var lw=1.2;
+  ctx.strokeStyle=lc;ctx.lineWidth=lw;
+
+  // Outer boundary
+  var pad=W*0.04;
+  ctx.strokeRect(pad,pad,W-pad*2,H-pad*2);
+
+  // Halfway line
+  var midY=H/2;
+  ctx.beginPath();ctx.moveTo(pad,midY);ctx.lineTo(W-pad,midY);ctx.stroke();
+
+  // Centre circle
+  ctx.beginPath();ctx.arc(W/2,midY,W*0.1,0,Math.PI*2);ctx.stroke();
+  // Centre spot
+  ctx.fillStyle=lc;ctx.beginPath();ctx.arc(W/2,midY,2.5,0,Math.PI*2);ctx.fill();
+
+  function drawEnd(isTop){
+    var baseY=isTop?pad:H-pad;
+    var dir=isTop?1:-1;
+
+    // Goal (H-shaped): posts + crossbar
+    var gW=W*0.22, gD=H*0.028;
+    var gX=(W-gW)/2;
+    var gY=isTop?baseY:baseY-gD;
+    ctx.strokeStyle='rgba(255,255,255,0.8)';ctx.lineWidth=2;
+    // Left post
+    ctx.beginPath();ctx.moveTo(gX,baseY);ctx.lineTo(gX,gY+dir*H*0.06);ctx.stroke();
+    // Right post
+    ctx.beginPath();ctx.moveTo(gX+gW,baseY);ctx.lineTo(gX+gW,gY+dir*H*0.06);ctx.stroke();
+    // Crossbar
+    var cbY=isTop?baseY+H*0.04:baseY-H*0.04;
+    ctx.beginPath();ctx.moveTo(gX,cbY);ctx.lineTo(gX+gW,cbY);ctx.stroke();
+    // Net lines (vertical)
+    ctx.strokeStyle='rgba(255,255,255,0.25)';ctx.lineWidth=0.8;
+    var netCols=4;
+    for(var n=1;n<netCols;n++){
+      var nx=gX+n*(gW/netCols);
+      ctx.beginPath();ctx.moveTo(nx,cbY);ctx.lineTo(nx,baseY);ctx.stroke();
+    }
+    // Net horizontal
+    for(var n=1;n<3;n++){
+      var ny=cbY+dir*n*((baseY-cbY)/3);
+      ctx.beginPath();ctx.moveTo(gX,ny);ctx.lineTo(gX+gW,ny);ctx.stroke();
+    }
+    ctx.strokeStyle=lc;ctx.lineWidth=lw;
+
+    // Small rectangle (goal area) 
+    var srW=W*0.36,srH=H*0.055;
+    var srX=(W-srW)/2;
+    var srY=isTop?baseY:baseY-srH;
+    ctx.strokeRect(srX,srY,srW,isTop?srH:-srH);
+
+    // Large rectangle (14-yard box equivalent)
+    var lrW=W*0.60,lrH=H*0.11;
+    var lrX=(W-lrW)/2;
+    ctx.strokeRect(lrX,isTop?baseY:baseY-lrH,lrW,isTop?lrH:-lrH);
+
+    // 13m arc (D) — semicircle outside large rect
+    var arcCY=isTop?baseY+lrH:baseY-lrH;
+    var arcR=W*0.18;
+    ctx.beginPath();
+    if(isTop){
+      ctx.arc(W/2,arcCY,arcR,0,Math.PI);
+    } else {
+      ctx.arc(W/2,arcCY,arcR,Math.PI,Math.PI*2);
+    }
+    ctx.stroke();
+
+    // 45m line
+    var y45=isTop?baseY+H*0.28:baseY-H*0.28;
+    ctx.beginPath();ctx.moveTo(pad,y45);ctx.lineTo(W-pad,y45);ctx.stroke();
+
+    // 65m line
+    var y65=isTop?baseY+H*0.44:baseY-H*0.44;
+    ctx.setLineDash([6,5]);
+    ctx.beginPath();ctx.moveTo(pad,y65);ctx.lineTo(W-pad,y65);ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  drawEnd(true);
+  drawEnd(false);
+}
+function drawPitch(){
+  var p=$('PT');
+  p.querySelectorAll('.pslot').forEach(function(e){e.remove();});
+  for(var i=1;i<=15;i++){
+    var xy=POS[i],pl=squad[i];
+    var d=document.createElement('div');
+    d.className='pslot'+(pl?' in':'');
+    d.style.left=xy[0]+'%';d.style.top=xy[1]+'%';
+    if(pl){
+      var c=CC[pl.county]||['#444','#333'];
+      d.style.background='linear-gradient(150deg,'+c[0]+' 55%,'+c[1]+' 55%)';
+      d.style.color=tc(c[0]);d.style.borderColor=c[1];
+      var ratShow=mode==='legendary'?'<div class="psrat leg">?</div>':'<div class="psrat">'+pl.rat+'</div>';
+      d.innerHTML='<span class="psn">'+i+'</span><div class="shi"></div><div class="psnm">'+pl.name+'</div>'+ratShow+'<div class="psco">'+pl.county+'</div>';
+    } else {
+      d.innerHTML='<span class="psn">'+i+'</span><div class="pspos">'+xy[2]+'</div>';
+    }
+    p.appendChild(d);
+  }
+}
+
+// ── SHARE PNG via Canvas API ──
+function doShare(){
+  var p=squad.filter(Boolean);
+  if(p.length<15){showM('Not yet!','Fill your 15 first.','');return;}
+  var avg=Math.round(p.reduce(function(a,b){return a+b.rat;},0)/15);
+  var stars=avg>=93?5:avg>=90?4:avg>=87?3:avg>=84?2:1;
+  var won=lastResults.length===6&&lastResults.every(function(r){return r.won;});
+  var topScorer=getBestScorer(lastResults.filter(function(r){return r.won;}));
+  var W=600,H=840;
+  var cv=$('shareCanvas');cv.width=W;cv.height=H;
+  var ctx=cv.getContext('2d');
+  // BG
+  ctx.fillStyle='#040f07';ctx.fillRect(0,0,W,H);
+  // Header
+  ctx.fillStyle='#0a1f10';ctx.fillRect(0,0,W,104);
+  ctx.fillStyle='#f2c94c';ctx.font='bold 36px system-ui,sans-serif';ctx.textAlign='center';
+  ctx.fillText('PICK YOUR 15',W/2,44);
+  ctx.fillStyle='#7aab88';ctx.font='bold 11px system-ui,sans-serif';
+  ctx.fillText('ALL-IRELAND LEGENDS DRAFT  ·  #PickYour15',W/2,62);
+  var badgeTxt=won?'🏆 CHAMPIONS':'CHAMPIONSHIP RUN';
+  var badgeBg=won?'#b8890a':'#1a4a28';
+  ctx.fillStyle=badgeBg;roundRect(ctx,W/2-80,70,160,26,7);ctx.fill();
+  ctx.fillStyle='#fff';ctx.font='bold 12px system-ui,sans-serif';ctx.fillText(badgeTxt,W/2,88);
+  // Pitch
+  var PH=400,PY=108,PX=18,PW=W-36;
+  for(var i=0;i<6;i++){ctx.fillStyle=i%2===0?'#0d3318':'#0a2a14';ctx.fillRect(PX,PY+i*(PH/6),PW,PH/6);}
+  ctx.strokeStyle='rgba(255,255,255,0.28)';ctx.lineWidth=1.5;
+  ctx.strokeRect(PX+8,PY+6,PW-16,PH-12);
+  ctx.beginPath();ctx.moveTo(PX+8,PY+PH/2);ctx.lineTo(PX+PW-8,PY+PH/2);ctx.stroke();
+  ctx.beginPath();ctx.arc(W/2,PY+PH/2,26,0,Math.PI*2);ctx.stroke();
+  ctx.strokeRect(W/2-28,PY+6,56,11);
+  ctx.strokeRect(W/2-28,PY+PH-17,56,11);
+  // Slots
+  var SL={1:[W/2,PY+PH-26],2:[W*0.2,PY+PH-76],3:[W/2,PY+PH-76],4:[W*0.8,PY+PH-76],5:[W*0.11,PY+PH-150],6:[W/2,PY+PH-150],7:[W*0.89,PY+PH-150],8:[W*0.33,PY+PH-222],9:[W*0.67,PY+PH-222],10:[W*0.11,PY+PH-296],11:[W/2,PY+PH-296],12:[W*0.89,PY+PH-296],13:[W*0.2,PY+PH-370],14:[W/2,PY+PH-370],15:[W*0.8,PY+PH-370]};
+  var SW=78,SH=48;
+  for(var i=1;i<=15;i++){
+    var pl=squad[i],xy=SL[i];if(!pl||!xy)continue;
+    var c=CC[pl.county]||['#333','#555'];
+    var sx=xy[0]-SW/2,sy=xy[1]-SH/2;
+    ctx.fillStyle=c[0];roundRect(ctx,sx,sy,SW,SH,6);ctx.fill();
+    ctx.save();ctx.beginPath();roundRect(ctx,sx,sy,SW,SH,6);ctx.clip();
+    ctx.fillStyle=c[1];ctx.fillRect(sx+SW*0.52,sy,SW*0.48,SH);ctx.restore();
+    ctx.fillStyle='rgba(255,255,255,0.45)';ctx.font='bold 7px system-ui,sans-serif';ctx.textAlign='left';ctx.fillText(i,sx+3,sy+8);
+    var tcolor=tc(c[0]);
+    ctx.fillStyle=tcolor;ctx.font='bold 9px system-ui,sans-serif';ctx.textAlign='center';ctx.fillText(pl.name,xy[0],sy+19);
+    ctx.font='bold 14px system-ui,sans-serif';ctx.fillText(mode==='legendary'?'?':String(pl.rat),xy[0],sy+34);
+    ctx.font='bold 7px system-ui,sans-serif';ctx.fillStyle='rgba(255,255,255,0.7)';ctx.fillText(pl.county,xy[0],sy+46);
+  }
+  // Results section
+  var RY=PY+PH+10;
+  ctx.fillStyle='#071a0c';ctx.fillRect(0,RY,W,H-RY);
+  ctx.fillStyle='rgba(242,201,76,0.2)';ctx.fillRect(0,RY,W,2);
+  // Stats row
+  var starsStr='★'.repeat(stars)+'☆'.repeat(5-stars);
+  var cols=[W*0.2,W*0.5,W*0.8];
+  var vals=[mode==='legendary'?'?':String(avg),starsStr,won?'Champions':'Eliminated'];
+  var lbls=['Avg Rating','Team Rating','Result'];
+  vals.forEach(function(v,i){
+    ctx.fillStyle=i===2&&won?'#f2c94c':i===1?'#f2c94c':'#ffffff';
+    ctx.font='bold '+(i===1?'17':'20')+'px system-ui,sans-serif';ctx.textAlign='center';
+    ctx.fillText(v,cols[i],RY+28);
+    ctx.fillStyle='#7aab88';ctx.font='bold 9px system-ui,sans-serif';
+    ctx.fillText(lbls[i].toUpperCase(),cols[i],RY+42);
+  });
+  // Divider
+  ctx.fillStyle='rgba(255,255,255,0.07)';ctx.fillRect(20,RY+52,W-40,1);
+  // Results rows
+  var lineY=RY+68;
+  var shown=lastResults.length>0?lastResults:[];
+  shown.forEach(function(r){
+    if(lineY>H-60)return;
+    ctx.fillStyle=r.won?'#7dffc0':'#ff9090';
+    ctx.font='bold 10px system-ui,sans-serif';ctx.textAlign='left';
+    var rndShort=r.round.replace('All-Ireland ','').replace('Qualifier','Qual.');
+    ctx.fillText((r.won?'✓ ':'✗ ')+rndShort,24,lineY);
+    ctx.fillStyle='#ffffff';ctx.font='bold 10px system-ui,sans-serif';ctx.textAlign='right';
+    ctx.fillText(r.sc.my.str+' v '+r.sc.th.str,W-24,lineY);
+    if(r.won&&r.scorer){
+      ctx.fillStyle='#f2c94c';ctx.font='9px system-ui,sans-serif';ctx.textAlign='center';
+      ctx.fillText('👓 '+r.scorer.name+' '+r.sG+'-'+String(r.sP).padStart(2,'0'),W/2,lineY);
+    }
+    lineY+=19;
+  });
+  // Top scorer box
+  if(topScorer){
+    ctx.fillStyle='rgba(242,201,76,0.1)';roundRect(ctx,18,lineY+4,W-36,32,7);ctx.fill();
+    ctx.strokeStyle='rgba(242,201,76,0.25)';ctx.lineWidth=1;roundRect(ctx,18,lineY+4,W-36,32,7);ctx.stroke();
+    ctx.fillStyle='#f2c94c';ctx.font='bold 10px system-ui,sans-serif';ctx.textAlign='left';
+    ctx.fillText('👓 TOP SCORER',26,lineY+16);
+    ctx.fillStyle='#ffffff';ctx.font='bold 13px system-ui,sans-serif';ctx.textAlign='right';
+    ctx.fillText(topScorer.name+'   '+topScorer.g+'-'+String(topScorer.p).padStart(2,'0'),W-26,lineY+16);
+    ctx.fillStyle='#7aab88';ctx.font='9px system-ui,sans-serif';ctx.textAlign='center';
+    ctx.fillText('Championship total',W/2,lineY+28);
+  }
+  // Footer
+  ctx.fillStyle='rgba(0,0,0,0.55)';ctx.fillRect(0,H-26,W,26);
+  ctx.fillStyle='#5a8a65';ctx.font='bold 10px system-ui,sans-serif';ctx.textAlign='center';
+  ctx.fillText('pickyour15.gaa  ·  Can you beat this?  ·  #PickYour15',W/2,H-10);
+  // Show inline + offer download
+  var imgData=cv.toDataURL('image/png');
+  var img=document.createElement('img');
+  img.src=imgData;
+  img.style.cssText='width:100%;border-radius:12px;display:block;margin-bottom:12px';
+  var dlBtn=document.createElement('button');
+  dlBtn.className='btn bg';
+  dlBtn.textContent='Download PNG';
+  dlBtn.style.cssText='width:100%;margin-bottom:6px';
+  dlBtn.onclick=function(){
+    var a=document.createElement('a');a.href=imgData;a.download='pick-your-15.png';
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+  };
+  var shareBtn2=document.createElement('button');
+  shareBtn2.className='btn bd';
+  shareBtn2.textContent='Share (Web Share)';
+  shareBtn2.style.cssText='width:100%';
+  shareBtn2.onclick=function(){
+    cv.toBlob(function(blob){
+      var file=new File([blob],'pick-your-15.png',{type:'image/png'});
+      if(navigator.canShare&&navigator.canShare({files:[file]})){
+        navigator.share({files:[file],title:'Pick Your 15',text:'Can you beat my All-Ireland 15? #PickYour15'});
+      } else {
+        var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='pick-your-15.png';
+        document.body.appendChild(a);a.click();document.body.removeChild(a);
+      }
+    },'image/png');
+  };
+  // Build modal content
+  var wrap=document.createElement('div');
+  wrap.appendChild(img);wrap.appendChild(dlBtn);wrap.appendChild(shareBtn2);
+  var note=document.createElement('p');
+  note.style.cssText='font-size:11px;color:#7aab88;margin-top:8px;text-align:center;font-weight:700';
+  note.textContent='Tag #PickYour15 — can your mates beat this?';
+  wrap.appendChild(note);
+  $('MT').textContent='Your Team Card';
+  $('MB').innerHTML='';$('MB').appendChild(wrap);
+  $('MN').style.display='none';
+  $('MW').classList.add('op');
+}
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);
+  ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();
+}
+
+function showM(t,b,n){$('MT').textContent=t;$('MB').innerHTML=b;var nd=$('MN');if(n){nd.innerHTML=n;nd.style.display='block';}else nd.style.display='none';$('MW').classList.add('op');}
+function closeMW(){$('MW').classList.remove('op');}
+function doReset(){
+  if(!confirm('Reset your team? All picks will be lost.'))return;
+  cur=null;squad=new Array(16).fill(null);used=new Set();going=false;
+  $('CN').textContent='Ready';$('CY').innerHTML='&nbsp;';
+  $('CF').textContent='Hit Draw to get started. One player per county. Fill all 15 to go to the championship.';
+  $('CM').style.display='none';$('RR').style.display='none';$('QD').style.display='none';
+  $('LG').innerHTML='<div style="color:#7aab88;font-size:12px">Fill your 15 to unlock the championship.</div>';
+  drawPitch();renderP();updateStats();
+}
+
+drawPitch();
+updateStats();
+drawPitchLines();
+window.addEventListener('resize',function(){drawPitchLines();setTimeout(drawPitchLines,200);});
+</script>
+</body>
+</html>
